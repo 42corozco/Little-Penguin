@@ -36,15 +36,32 @@ static void __exit myfd_cleanup(void)
 
 ssize_t myfd_read(struct file *fp, char __user *user, size_t size, loff_t *offs)
 {
-	size_t t, i;
-	char *tmp2;
-/***************
- * Malloc like a boss
- ***************/
-	tmp2 = kmalloc(sizeof(char) * PAGE_SIZE * 2, GFP_KERNEL);
-	tmp = tmp2;
-	for (t = strlen(str) - 1, i = 0; t >= 0; t--, i++) {
-		tmp[i] = str[t];
+	size_t i;
+	char *tmp;
+	ssize_t res;
+
+	/**************** Malloc like a boss***************/
+	tmp = kmalloc(sizeof(char) * PAGE_SIZE * 2, GFP_KERNEL);
+	for (i = 0; i < strlen(str); i++)
+		tmp[i] = str[strlen(str) - i - 1];
+	tmp[i] = 0x0;
+
+	res = simple_read_from_buffer(user, size, offs, tmp, i);
+	kfree(tmp);
+	return res;
+}
+
+ssize_t myfd_read(struct file *fp, char __user *user, size_t size, loff_t *offs)
+{
+	size_t i t;
+	char *tmp;
+	/***************
+	* Malloc like a boss
+	***************/
+	tmp = kmalloc(sizeof(char) * PAGE_SIZE * 2, GFP_KERNEL);
+	t = strlen(str) - 1;
+	for (i = 0; t > i; i++) {
+		tmp[i] = str[t-- - i];
 	}
 	tmp[i] = 0x0;
 	return simple_read_from_buffer(user, size, offs, tmp, i);
