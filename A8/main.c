@@ -47,7 +47,7 @@ ssize_t myfd_read(struct file *fp, char __user *user, size_t size, loff_t *offs)
 	/**************** Malloc like a boss***************/
 	tmp = kmalloc(sizeof(char) * PAGE_SIZE * 2, GFP_KERNEL);
 	t = strlen(str) - 1;
-	for (i = 0; t > i; i++)
+	for (i = 0; t >= i; i++)
 		tmp[i] = str[t - i];
 	tmp[i] = 0x0;
 	res =  simple_read_from_buffer(user, size, offs, tmp, i);
@@ -61,7 +61,6 @@ ssize_t myfd_write(struct file *fp, const char __user *user, size_t size, loff_t
 
 	res = 0;
 	res = simple_write_to_buffer(str, size, offs, user, size) + 1;
-	// 0x0 = "\0"
 	str[size + 1] = 0x0;
 	return res;
 }
