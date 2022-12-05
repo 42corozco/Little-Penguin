@@ -47,6 +47,7 @@ static int createDirectory(void)
 	dir = debugfs_create_dir("fortytwo", NULL);
 	if (!dir)
 		return -ENOENT;
+	pr_info("Directory fortytwo (ok)\n");
 	return 0;
 }
 
@@ -55,6 +56,7 @@ static int createFile(char *name, int chmod)
 	file = debugfs_create_file(name, chmod, dir, NULL, &data_file_fops);
 	if (!file)
 		goto exit;
+	pr_info("Directory %s (ok)\n", name);
 	return 0;
 
 exit:
@@ -69,6 +71,7 @@ static int __init debug42_init(void)
 	pr_info("Menaging envirement . . . . . . . . azereje\n");
 	createDirectory();
 	createFile("id", 0666);
+	createFile("", 0666);
 	return 0;
 }
 
