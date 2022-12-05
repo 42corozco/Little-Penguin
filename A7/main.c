@@ -7,31 +7,30 @@
 #include <linux/fs.h>
 #include <linux/miscdevice.h>
 
-MODULE_LICENSE("GPL");
-MODULE_AUTHOR("corozco");
-
 /* directory and files */
 static struct dentry *dir;
 static struct dentry *file;
 static char *message = "corozco";
-static int msg_len = 7;
+static int message_length = 7;
 
 static ssize_t data_read(struct file *filp, char __user *buf, size_t count, loff_t *f_pos)
 {
-	return simple_read_from_buffer(buf, count, f_pos, message, strlen(message));
+    return simple_read_from_buffer(buf, count, f_pos, message, strlen(message));
 }
 
-static ssize_t data_write(struct file *filp, char __user *buf, size_t count, loff_t *f_pos)
+static ssize_t data_write(struct file *filp, const char __user *buf, size_t count, loff_t *f_pos)
 {
 	char specified_msg[count];
-	ssize_t retval;
+	ssize_t retval = -EINVAL;
 
-//	if (count != msg_len)
-//		return retval;
+	if (count != message_length)
+			return retval;
+
 	retval = simple_write_to_buffer(specified_msg, count, f_pos, buf, count);
 	if (retval < 0)
-		return retval;
-	retval = strncmp(message, specified_msg, count) ? -EINVAL: count;
+			return retval;
+
+	retval = strncmp(message, specified_msg, count) ? -EINVAL : count;
 	return retval;
 }
 
@@ -40,6 +39,7 @@ const struct file_operations data_file_fops = {
 	.read = data_read,
 	.write = data_write,
 };
+
 
 static int createDirectory(void)
 {
@@ -80,3 +80,7 @@ static void __exit debug42_exit(void)
 
 module_init(debug42_init);
 module_exit(debug42_exit);
+
+MODULE_AUTHOR("corozco");
+MODULE_DESCRIPTION("A8");
+MODULE_LICENSE("GPL");
