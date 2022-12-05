@@ -1,0 +1,16 @@
+/home/corozco/Little-Penguin/A7/main.c: In function 'data_write':
+/home/corozco/Little-Penguin/A7/main.c:26:9: warning: ISO C90 forbids variable length array 'specified_msg' [-Wvla]
+   26 |         char specified_msg[count];
+      |         ^~~~
+/home/corozco/Little-Penguin/A7/main.c: At top level:
+/home/corozco/Little-Penguin/A7/main.c:41:18: error: initialization of 'ssize_t (*)(struct file *, const char *, size_t,  loff_t *)' {aka 'long int (*)(struct file *, const char *, long unsigned int,  long long int *)'} from incompatible pointer type 'ssize_t (*)(struct file *, char *, size_t,  loff_t *)' {aka 'long int (*)(struct file *, char *, long unsigned int,  long long int *)'} [-Werror=incompatible-pointer-types]
+   41 |         .write = data_write,
+      |                  ^~~~~~~~~~
+/home/corozco/Little-Penguin/A7/main.c:41:18: note: (near initialization for 'data_file_fops.write')
+/home/corozco/Little-Penguin/A7/main.c:17:12: warning: 'msg_len' defined but not used [-Wunused-variable]
+   17 | static int msg_len = 7;
+      |            ^~~~~~~
+cc1: some warnings being treated as errors
+make[2]: *** [scripts/Makefile.build:252: /home/corozco/Little-Penguin/A7/main.o] Error 1
+make[1]: *** [Makefile:1999: /home/corozco/Little-Penguin/A7] Error 2
+make: *** [Makefile:4: all] Error 2
