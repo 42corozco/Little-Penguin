@@ -7,6 +7,8 @@
 #include <linux/fs.h>
 #include <linux/miscdevice.h>
 
+#include <linux/jiffies.h>
+
 /* directory and files */
 static struct dentry *dir;
 static struct dentry *file;
@@ -20,18 +22,28 @@ static ssize_t data_read(struct file *filp, char __user *buf, size_t count, loff
 
 static ssize_t data_write(struct file *filp, const char __user *buf, size_t count, loff_t *f_pos)
 {
-	char specified_msg[count];
-	ssize_t retval = -EINVAL;
+	printk("tiempo :%s\n", filp->f_path.dentry->d_name.name);
+	if (!strcmp(filp->f_path.dentry->d_name.name, "id"))
+	{
+		char specified_msg[count];
+		ssize_t retval = -EINVAL;
 
-	if (count != message_length)
+		if (count != message_length)
 			return retval;
 
-	retval = simple_write_to_buffer(specified_msg, count, f_pos, buf, count);
-	if (retval < 0)
+		retval = simple_write_to_buffer(specified_msg, count, f_pos, buf, count);
+		if (retval < 0)
 			return retval;
 
-	retval = strncmp(message, specified_msg, count) ? -EINVAL : count;
-	return retval;
+		retval = strncmp(message, specified_msg, count) ? -EINVAL : count;
+		return retval;
+	}
+	if (!strcmp(filp->f_path.dentry->d_name.name, "jiffies"))
+	{
+		pr_info("tiempo :%lu\n", jiffies);
+		return EINVAL;
+	}
+	return 0;
 }
 
 const struct file_operations data_file_fops = {
@@ -71,7 +83,8 @@ static int __init debug42_init(void)
 	pr_info("Menaging envirement . . . . . . . . azereje\n");
 	createDirectory();
 	createFile("id", 0666);
-	createFile("", 0666);
+	createFile("jiffies", 0444);
+	//createFile("foo", 0666);
 	return 0;
 }
 
