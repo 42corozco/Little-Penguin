@@ -15,47 +15,50 @@ static struct dentry *file;
 static char *message = "corozco";
 static int message_length = 7;
 
-static ssize_t data_read(struct file *filp, char __user *buf, size_t count, loff_t *f_pos)
+static ssize_t id_read(struct file *filp, char __user *buf, size_t count, loff_t *f_pos)
 {
     return simple_read_from_buffer(buf, count, f_pos, message, strlen(message));
 }
 
-static ssize_t data_write(struct file *filp, const char __user *buf, size_t count, loff_t *f_pos)
+static ssize_t id_write(struct file *filp, const char __user *buf, size_t count, loff_t *f_pos)
 {
-	printk("tiempo :%s\n", filp->f_path.dentry->d_name.name);
-	if (!strcmp(filp->f_path.dentry->d_name.name, "id"))
-	{
-		char specified_msg[count];
-		ssize_t retval = -EINVAL;
+	char specified_msg[count];
+	ssize_t retval = -EINVAL;
 
-		if (count != message_length)
-			return retval;
-
-		retval = simple_write_to_buffer(specified_msg, count, f_pos, buf, count);
-		if (retval < 0)
-			return retval;
-
-		retval = strncmp(message, specified_msg, count) ? -EINVAL : count;
+	if (count != message_length)
 		return retval;
-	}
-	if (!strcmp(filp->f_path.dentry->d_name.name, "jiffies"))
-	{
-		pr_info("tiempo :%lu\n", jiffies);
-		return EINVAL;
-	}
-	return 0;
+
+	retval = simple_write_to_buffer(specified_msg, count, f_pos, buf, count);
+	if (retval < 0)
+		return retval;
+	retval = strncmp(message, specified_msg, count) ? -EINVAL : count;
+	return retval;
 }
-
-const struct file_operations data_file_fops = {
+/*
+static ssize_t jiffies_read(struct file *filp, char __user *buf, size_t count, loff_t *f_pos)
+{
+    return simple_read_from_buffer(buf, count, f_pos, message, strlen(message));
+}
+*/
+const struct file_operations id_file_fops = {
 	.owner = THIS_MODULE,
-	.read = data_read,
-	.write = data_write,
+	.read = id_read,
+	.write = id_write,
 };
-
+/*
+const struct file_operations jiffies_file_fops = {
+	.owner = THIS_MODULE,
+	.read = jiffies_read,
+};
+const struct file_operations foo_file_fops = {
+	.owner = THIS_MODULE,
+	.read = foo_read,
+	.write = foo_write,
+};
+*/
 
 static int createDirectory(void)
 {
-	/* /sys/kernel/debug */
 	dir = debugfs_create_dir("fortytwo", NULL);
 	if (!dir)
 		return -ENOENT;
@@ -65,14 +68,21 @@ static int createDirectory(void)
 
 static int createFile(char *name, int chmod)
 {
-	file = debugfs_create_file(name, chmod, dir, NULL, &data_file_fops);
-	if (!file)
-		goto exit;
-	pr_info("Directory %s (ok)\n", name);
+	if (!strcmp(name, "id"))
+	{
+		file = debugfs_create_file(name, chmod, dir, NULL, &id_file_fops);
+		if (!file)
+			goto exit;
+	}
+	if (!strcmp(name, "jiffies"))
+		debugfs_create_ulong(name, chmod, dir, (long unsigned int *)&jiffies);
+	//if (!strcmp(name, "foo"))
+	//	file = debugfs_create_file(name, chmod, dir, NULL, &foo_file_fops);
+	pr_info("File %s (ok)\n", name);
 	return 0;
 
 exit:
-	pr_info("Error (CREATEFILE)\n");
+	pr_info("Error [%s] not create\n", name);
 	debugfs_remove_recursive(dir);
 	return -ENOENT;
 
@@ -84,7 +94,7 @@ static int __init debug42_init(void)
 	createDirectory();
 	createFile("id", 0666);
 	createFile("jiffies", 0444);
-	//createFile("foo", 0666);
+	//createFile("foo", 0644);
 	return 0;
 }
 
