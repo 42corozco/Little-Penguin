@@ -1,19 +1,18 @@
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
-
 #include <linux/debugfs.h>
-
 #include <linux/fs.h>
 #include <linux/miscdevice.h>
-
 #include <linux/jiffies.h>
+#include <linux/mutex.h>
 
 /* directory and files */
 static struct dentry *dir;
 static struct dentry *file;
 static char *message = "corozco";
 static int message_length = 7;
+static char data[PAGE_SIZE];
 
 static ssize_t id_read(struct file *filp, char __user *buf, size_t count, loff_t *f_pos)
 {
@@ -34,28 +33,42 @@ static ssize_t id_write(struct file *filp, const char __user *buf, size_t count,
 	retval = strncmp(message, specified_msg, count) ? -EINVAL : count;
 	return retval;
 }
-/*
-static ssize_t jiffies_read(struct file *filp, char __user *buf, size_t count, loff_t *f_pos)
+
+
+/* DEFINE_MUTEX defines and initializes mutex. It is useful for define global mutexes. */
+DEFINE_MUTEX(mutex);
+static ssize_t foo_read(struct file *filp, char __user *buf, size_t count, loff_t *f_pos)
 {
-    return simple_read_from_buffer(buf, count, f_pos, message, strlen(message));
+	int retval;
+
+	mutex_lock(&mutex);
+	retval = simple_read_from_buffer(buf, count, f_pos, data, strlen(data));
+	mutex_unlock(&mutex);
+	return retval;
 }
-*/
+
+static ssize_t foo_write(struct file *filp, const char __user *buf, size_t count, loff_t *f_pos)
+{
+	int retval;
+
+	mutex_lock(&mutex);
+	retval = simple_write_to_buffer(data, count, f_pos, buf, count);
+	mutex_unlock(&mutex);
+
+	return retval;
+}
+
 const struct file_operations id_file_fops = {
 	.owner = THIS_MODULE,
 	.read = id_read,
 	.write = id_write,
 };
-/*
-const struct file_operations jiffies_file_fops = {
-	.owner = THIS_MODULE,
-	.read = jiffies_read,
-};
+
 const struct file_operations foo_file_fops = {
 	.owner = THIS_MODULE,
 	.read = foo_read,
 	.write = foo_write,
 };
-*/
 
 static int createDirectory(void)
 {
@@ -76,8 +89,8 @@ static int createFile(char *name, int chmod)
 	}
 	if (!strcmp(name, "jiffies"))
 		debugfs_create_ulong(name, chmod, dir, (long unsigned int *)&jiffies);
-	//if (!strcmp(name, "foo"))
-	//	file = debugfs_create_file(name, chmod, dir, NULL, &foo_file_fops);
+	if (!strcmp(name, "foo"))
+		file = debugfs_create_file(name, chmod, dir, NULL, &foo_file_fops);
 	pr_info("File %s (ok)\n", name);
 	return 0;
 
@@ -94,7 +107,7 @@ static int __init debug42_init(void)
 	createDirectory();
 	createFile("id", 0666);
 	createFile("jiffies", 0444);
-	//createFile("foo", 0644);
+	createFile("foo", 0644);
 	return 0;
 }
 
