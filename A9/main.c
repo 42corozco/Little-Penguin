@@ -13,14 +13,6 @@
 #define procfs_name "mymounts"
 static struct proc_dir_entry *proc_file;
 
-/*
-static ssize_t mywrite(struct file *file, const char __user *ubuf,size_t count, loff_t *ppos)
-{
-	//printk( KERN_DEBUG "write handler\n");
-	return -1;
-}
-*/
-
 ssize_t read_proc(struct file *filp, char *buf, size_t len, loff_t *offp )
 {
     struct dentry *curdentry;
@@ -30,20 +22,20 @@ ssize_t read_proc(struct file *filp, char *buf, size_t len, loff_t *offp )
         //if ( curdentry->d_flags & DCACHE_MOUNTED)
             printk("%s is mounted", curdentry->d_name.name);
     }
-    return 0;
+    return -1;
 }
 
 static struct file_operations myops =
 {
 	.owner = THIS_MODULE,
 	.read = read_proc,
-	//.write = mywrite,
 };
 
 static int __init proc_init(void)
 {
 	proc_file = proc_create(procfs_name, 0644, NULL,(const struct proc_ops *)&myops);
 	if (proc_file == NULL) {
+		remove_proc_entry(procfs_name, NULL);
 		pr_info("Error: could not initialize /proc/%s\n", procfs_name);
 		return -ENOMEM;
 	}
@@ -52,8 +44,7 @@ static int __init proc_init(void)
 
 static void __exit proc_exit(void)
 {
-	//remove_proc_entry(procfs_name, proc_file);
-	proc_remove(proc_file);
+	remove_proc_entry(procfs_name, NULL);
 	pr_info("Cleaning up module\n");
 }
 
