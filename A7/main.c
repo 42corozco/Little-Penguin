@@ -81,17 +81,11 @@ static int createDirectory(void)
 	return 0;
 }
 
-static int createFile(char *name, int chmod)
+static int createFile(char *name, int chmod, const struct file_operations *fops)
 {
-	if (!strcmp(name, "id")) {
-		file = debugfs_create_file(name, chmod, dir, NULL, &id_file_fops);
-		if (!file)
-			goto exit;
-	}
-	if (!strcmp(name, "jiffies"))
-		debugfs_create_ulong(name, chmod, dir, (unsigned long *)&jiffies);
-	if (!strcmp(name, "foo"))
-		file = debugfs_create_file(name, chmod, dir, NULL, &foo_file_fops);
+	file = debugfs_create_file(name, chmod, dir, NULL, fops);
+	if (!file)
+		goto exit;
 	pr_info("File %s (ok)\n", name);
 	return 0;
 
@@ -106,9 +100,9 @@ static int __init debug42_init(void)
 {
 	pr_info("Menaging envirement . . . . . . . . azereje\n");
 	createDirectory();
-	createFile("id", 0666);
-	createFile("jiffies", 0444);
-	createFile("foo", 0644);
+	createFile("id", 0666, &id_file_fops);
+	debugfs_create_ulong("jiffies", 0444, dir, (unsigned long *)&jiffies);
+	createFile("foo", 0644, &foo_file_fops);
 	return 0;
 }
 
