@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-2.0 OR MIT
+
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -16,7 +18,7 @@ static char data[PAGE_SIZE];
 
 static ssize_t id_read(struct file *filp, char __user *buf, size_t count, loff_t *f_pos)
 {
-    return simple_read_from_buffer(buf, count, f_pos, message, strlen(message));
+	return simple_read_from_buffer(buf, count, f_pos, message, strlen(message));
 }
 
 static ssize_t id_write(struct file *filp, const char __user *buf, size_t count, loff_t *f_pos)
@@ -81,14 +83,13 @@ static int createDirectory(void)
 
 static int createFile(char *name, int chmod)
 {
-	if (!strcmp(name, "id"))
-	{
+	if (!strcmp(name, "id")) {
 		file = debugfs_create_file(name, chmod, dir, NULL, &id_file_fops);
 		if (!file)
 			goto exit;
 	}
 	if (!strcmp(name, "jiffies"))
-		debugfs_create_ulong(name, chmod, dir, (long unsigned int *)&jiffies);
+		debugfs_create_ulong(name, chmod, dir, (unsigned long *)&jiffies);
 	if (!strcmp(name, "foo"))
 		file = debugfs_create_file(name, chmod, dir, NULL, &foo_file_fops);
 	pr_info("File %s (ok)\n", name);
