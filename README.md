@@ -76,7 +76,7 @@ En général, chaque périphérique a son propre pilote.
   les périphériques d'entrée-sortie permettent des communications bidirectionnelles.
 ```
 
-# doc 
+# Sources 
 * linux-next: https://www.kernel.org/doc/man-pages/linux-next.html
 * characlter device :https://askubuntu.com/questions/1021394/what-is-a-character-device
 * peripherique : https://www.techno-science.net/definition/8130.html
