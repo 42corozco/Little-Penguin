@@ -38,12 +38,12 @@ L' arborescence linux-next est la zone de stockage des correctifs destinés
 si vous faites du développement de noyau à la pointe de la technologie,
 vous voudrez peut-être travailler à partir de cet arbre plutôt que de l'arbre principal de Linus Torvalds.
 
-Linux-next is a somewhat strange base on which to try to develop, though.
-It is built anew every day from over 100 subsystem trees,
-each of which can, itself, change from one day to the next.
-So linux-next is a moving target, just like the mainline is. But, unlike the mainline,
-linux-next has no consistent or coherent history.
-Every day's linux-next tree is a completely new creation with a unique - and transient - history.
+Linux-next est cependant une base quelque peu étrange sur laquelle essayer de se développer.
+Il est reconstruit chaque jour à partir de plus de 100 arborescences de sous-systèmes,
+dont chacun peut, lui-même, changer d'un jour à l'autre.
+Linux-next est donc une cible mouvante, tout comme la ligne principale. Mais, contrairement à la ligne principale,
+linux-next n'a pas d'historique cohérent ou cohérent.
+L'arborescence linux-next de chaque jour est une toute nouvelle création avec une histoire unique - et transitoire.
 ```
 
 ## CHARACTER DEVICE
