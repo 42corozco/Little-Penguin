@@ -68,6 +68,12 @@ des blocs entiers de données.
   
   -> Le nombre majeur par défaut de tous les pilotes misc est 10 .
 ```
+## Pilote
+```
+Un pilote informatique, souvent abrégé en pilote, est un programme informatique
+destiné à permettre à un autre programme d'interagir avec un périphérique.
+En général, chaque périphérique a son propre pilote.
+```
 
 ## périphérique
 ```
