@@ -57,17 +57,6 @@ des blocs entiers de données.
   ---> Exemples de Block Devices : disques durs, caméras USB, Disk-On-Key.
 ```
 
-## Misc Device Driver
-```
-  Misc driver est le pilote divers pour divers périphériques.
-  Nous pouvons dire que les pilotes misc sont des pilotes de caractères spéciaux et simples.
-  Vous pouvez écrire ce pilote misc lorsque vous ne pouvez pas classer votre périphérique.
-  Cela signifie que si vous ne souhaitez pas utiliser le numéro majeur, vous pouvez écrire ce pilote misc.
-  Et aussi si vous voulez écrire un pilote simple,
-  vous pouvez choisir un pilote divers au lieu de choisir un pilote de caractère.
-  
-  -> Le nombre majeur par défaut de tous les pilotes misc est 10 .
-```
 ## Pilote
 ```
 Un pilote informatique, souvent abrégé en pilote, est un programme informatique
